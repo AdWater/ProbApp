@@ -10,36 +10,21 @@
 #######################################
 ## Data check error messages
 
-xerr = function(flag) {
+xerr = function(flag,shiny=T) {
 
   if(flag==1) {
-
     xerror = "Fatal error: Data not found under the headers provided - please check the headers are correct (case sensitive) and try again."
-    print(xerror)
-    showNotification(xerror)
-
   } else if(flag==2) {
-
     xerror = "Fatal error: One or more of the input vectors (e.g. observed or simulated flow or dates) contains no data."
-    print(xerror)
-    showNotification(xerror)
-
   } else if(flag==3) {
-
     xerror = "Fatal error: One or more of the input vectors (e.g. observed or simulated flow or dates) contains data of the wrong type - dates must be characters and flows must be numeric."
-    print(xerror)
-    showNotification(xerror)
-
   } else if(flag==4) {
-
     xerror = "Fatal error: Observed and simulated data are the same vector."
-    print(xerror)
-    showNotification(xerror)
-
   } else if(flag==5) {
-
     xerror = "Fatal error: Observed and simulated flows and / or the corresponding dates are different lengths."
   }
+  print(xerror)
+  if(shiny){showNotification(xerror)}
 
 }
 
@@ -87,7 +72,7 @@ error = function(msgFlag,num=NA) {
                             "  Units assumed to be millimetres per day (mmd).",
                             sep="\n")
   }
-  
+
   return(msg.print.error)
 
 }

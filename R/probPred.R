@@ -40,7 +40,7 @@ probPred = function(data,opt,param) {
 
 #######################################
 ## Loading dependent packages
-  
+
   x="moments" %in% rownames(installed.packages())
   if(!x) {install.packages("moments",lib=.libPaths())}
   library("moments")
@@ -67,32 +67,32 @@ probPred = function(data,opt,param) {
 
   paramFix = list(A=param$A,lambda=param$lambda)
   meantype = opt$meantype
-  
+
   calc_rho = T # Always calculate Rho
 
 #######################################
 ## Error checks on the input data
-  
+
   data.headers = colnames(data)
 
   if(!is.element(opt$obs,data.headers) |
      !is.element(opt$pred,data.headers) |
      !is.element(opt$date,data.headers)) {
-    xerr(flag=1)# headers not in the data file
+    xerr(flag=1,shiny=F)# headers not in the data file
     return()
   } else if(all(is.na(data[opt$obs][[1]])) | all(is.na(data[opt$pred][[1]])) | all(is.na(data[opt$date][[1]]))) {
-    xerr(flag=2) # checks for empty data vectors
+    xerr(flag=2,shiny=F) # checks for empty data vectors
     return()
 
   } else if(is.character(data[opt$obs][[1]]) | is.character(data[opt$pred][[1]]) | is.numeric(data[opt$date][[1]])) {
-    xerr(flag=3) # check for characters (e.g. dates) in the obs or pred
+    xerr(flag=3,shiny=F) # check for characters (e.g. dates) in the obs or pred
     return()
   } else if(sum(data[opt$obs][[1]]-data[opt$pred][[1]],na.rm=T)==0) {
-    xerr(flag=4) # check for obs and pred being the same vector
+    xerr(flag=4,shiny=F) # check for obs and pred being the same vector
     return()
   } else if(length(data[opt$obs][[1]])!=length(data[opt$pred][[1]]) |
             length(data[opt$obs][[1]])!=length(data[opt$date][[1]])) {
-    xerr(flag=5) # checks that the input vectors are all the same length
+    xerr(flag=5,shiny=F) # checks that the input vectors are all the same length
     return()
   }
 
@@ -102,51 +102,51 @@ probPred = function(data,opt,param) {
 
 ######################################
 ## Calculations
-  
+
   # calc parameters
   param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=opt)
 
   # calc eta_star
   std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt)
   print("Starting calculation of probabilistic replicates...")
-  
+
   # calc predictive replicates
   pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=reps,Qmin=0.,Qmax=999.,truncType='spike')
 
   # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
   print("Starting calculation of metrics...")
-  
+
   # generating metrics (reliability, precision, bias)
   metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
   print("Printing to pdf...")
 
-  # opening pdf 
+  # opening pdf
   pdf(paste(title,"_Summary.pdf",sep=""))
 
 ######################################
 ## Printing plots to pdf
-  
+
   # Front page
-  output.main(param=param,metrics=metrics,data=data,is.data=T,opt=opt,dir.loc=data_dirname) 
-  
+  output.main(param=param,metrics=metrics,data=data,is.data=T,opt=opt,dir.loc=data_dirname)
+
   # Boxplots
   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$reliability,metric="reliability",boxColour="pink")
   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$sharpness,metric="sharpness",boxColour="white")
   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$bias,metric="bias",boxColour="lightblue")
-   
+
   # PQQ plot
   plot.performance(data=data,pred.reps=pred.reps,type='PQQ',opt=opt)
-   
+
   # Residual plot #1
   plot.residuals(data=data,std.resids=std.resids,type='pred',opt=opt)
-   
+
   # Residual plot #2
   plot.residuals(data=data,std.resids=std.resids,type='prob(pred)',opt=opt)
-   
+
   # Density plot
   plot.residuals(data=data,std.resids=std.resids,type='density',opt=opt)
-   
+
   # standardised residual plot
   tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
 
@@ -156,13 +156,13 @@ probPred = function(data,opt,param) {
     #acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
     #acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
   #}
-  
+
   # Timeseries
   timeseries(data=data,pred.reps=pred.reps,opt=opt)
-  
+
   # terminate PDF
   dev.off()
-  
+
 ######################################
 ## Printing .csv
 
