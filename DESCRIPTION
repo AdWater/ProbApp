@@ -7,10 +7,11 @@ Authors@R: c(person("Jason","Hunter", email="jason.hunter@adelaide.edu.au",role=
              person("David", "McInerney", email="david.mcinerney@adelaide.edu.au",role=c("aut")),
              person("Dmitri","Kavetski", email="dmitri.kavetski@adelaide.edu.au",role=c("aut")),
              person("Bree","Bennett",email="bree.bennett@adelaide.edu.au",role=c("aut")))
-Description:ProbPred is a post-processed residual error model for generating probabilistic predictions from a users' observed and simulated hydrological streamflow data. It is presented as an R-function and as an interactive Shiny interface.
-Maintainer: Jason Hunter <jason.hunter@adelaide.edu.au>
-Depends: 
+Description: ProbPred is a post-processed residual error model for generating probabilistic predictions from a users' observed and simulated hydrological streamflow data. It is presented as an R-function and as an interactive Shiny interface.
+Maintainer: David McInerney <david.mcinerney@adelaide.edu.au>
 Imports: 
+    shiny,
+    shinythemes
 License: GPL-3.0
 URL: https://github.com/Jasenter/Probabilistic_App
 BugReports: https://github.com/Jasenter/Probabilistic_App/issues
