@@ -1,4 +1,4 @@
-# plotFunctions.R 
+# plotFunctions.R
 # Lists plotting functions
 
 #######################################
@@ -14,13 +14,13 @@ plot.performance = function(data,pred.reps,type,opt,...){
 ## residual plots (density, scatter)
 
 plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NULL,...){
-  
+
   if (type == 'prob(pred)'){
     if (is.null(ylab)){ylab='Standardised residuals'}
     plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
                          plot.type=type, resid.outlier.thres = c(NA),
                          ylab=ylab,xaxs='i',yaxs='i',...)
-    
+
     } else if (type == 'pred'){
       if (is.null(ylab)){ylab='Standardised residuals'}
       plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
@@ -66,7 +66,7 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   xrow = 0.41
   txtoffset = (ylim.max)*0.05
   par(mfrow=c(1,1),oma=c(0,0,0,0),mar=c(4,4,4,4))
-  
+
   # Plotting
   boxplot.ext(xin=get(HRSlab), ylim=c(0,ylim.max),
               colouring = boxColour,xaxt="n",ylab=c(""))
@@ -119,6 +119,9 @@ tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F
   eta = calc_eta(Qobs=data[[opt$obs]],Qh=data[[opt$pred]],param=param,heteroModel=heteroModel) # transformed residuals
   eta.std = calc_std_resids(data,param,heteroModel=heteroModel,opt=opt) # standardised, transformed residuals
   sim = calc_tranz(Q=data[[opt$pred]],Qh=NULL,heteroModel=heteroModel,param=param) # transformed predicted flow
+
+  sim = sim[!is.na(eta.std)]
+  eta.std = eta.std[!is.na(eta.std)]
 
   plot.np.sdy.cond.x(x=sim,y=eta.std,ylab=c(""),xlab=c(""),metFlag=metFlag,prop.x=0.1)
 
