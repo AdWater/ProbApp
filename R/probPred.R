@@ -1,7 +1,8 @@
 #' probPred function
 #'
 #' Generates error predictions from a given observed and simulated series. Outputs a .pdf summary file containing plots and metrics, and (optionally) two .csv files containing the probabilistic predictions themselves and the probability limits. By J Hunter & Team.
-#' @param data  Input data, given as a matrix.  Must contain unbroken, aligned columns of a) dates, b) observed streamflow, and c) simulated streamflow from a deterministic model.
+#' @param data  Input data, given as a dataframe  Must contain unbroken, aligned columns of a) dates, b) observed streamflow, and c) simulated streamflow from a deterministic model. data can also include optional maskCal and maskPred vectors (same length as other columns),
+#' to indicate which dates are used in calibration and prediction (values of 0 mean obs/pred for that time are included, 1 means data is excluded) )
 #' @param opt List of options.
 #' @param opt$reps Number of probabilistic replicates to be generated. Recommended (and default) number is 100. Higher numbers of replicates require more computing time and lower numbers risk innacurate predictions.
 #' @param opt$dirname Directory into which the output files are to be saved.
@@ -11,8 +12,9 @@
 #' @param opt$date Column name of the dates in the input data. Default is 'date'. This input must match the column header of the dates.
 #' @param opt$meantype Options are "zero" or "linear", with "linear" being default. Defines the structure of the mean parameter in the probabilistic model. "zero" uses traditional modelling assumptions, and "linear" represents an innovative new approach that is more generally-applicable to a wider range of objective functions. Please refer to Hunter et al. 2021 for a comprehensive demonstration of the difference in predictive quality between the two.
 #' @param opt$unit Units of the input streamflow. Default is 'mmd'. Alternatives are 'mm/d', 'm3s', 'm3/s','ML/d', 'MLd'.
-#' @param opt$repPrint T / F to print a .csv containing the probabilistic replicates. Default is 'T'.
-#' @param opt$plPrint T / F to print a .csv containing the probability limits. Default is 'T'.
+#' @param opt$repPrint T / F to print a .csv containing the probabilistic replicates. Default is F.
+#' @param opt$plPrint T / F to print a .csv containing the probability limits. Default is F.
+#' @param opt$pdfOutput T / F to print figures to pdf. Default is F.
 #' @param param List of parameters.
 #' @param param$A Box-Cox shift parameter.
 #' @param param$lambda Box-Cox power parameter.
@@ -41,19 +43,29 @@ probPred = function(data,opt,param) {
 #######################################
 ## Inputs & parameters
 
-  reps = opt$reps
   title = opt$title
   dirname = opt$dirname
+  if(is.null(opt$reps)){opt$reps=100}
+  if(is.null(opt$repPrint)){opt$repPrint=F}
+  if(is.null(opt$plPrint)){opt$plPrint=F}
+  if(is.null(opt$pdfOutput)){opt$pdfOutput=F}
+  if(is.null(opt$return.output)){opt$return.output=F}
 
   setwd(opt$dirname)
   data_dirname = system.file("shiny",package="ProbPred")
 
+#######################################
+## Determine if we calculate parameters
+
   heteroModel = 'BC'
 
-  paramFix = list(A=param$A,lambda=param$lambda)
-  meantype = opt$meantype
-
-  calc_rho = T # Always calculate Rho
+  if (!(is.null(param$mean_eta_0)|is.null(param$mean_eta_0)|is.null(param$rho)|is.null(param$sigma_y))){
+    calc.params = F
+  } else {
+    calc.params = T
+    paramFix = list(A=param$A,lambda=param$lambda)
+    meantype = opt$meantype
+  }
 
 #######################################
 ## Error checks on the input data
@@ -88,15 +100,19 @@ probPred = function(data,opt,param) {
 ######################################
 ## Calculations
 
-  # calc parameters
-  param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=opt)
+  if (calc.params){
+    # calc parameters
+    param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=opt)
+  } else {
+    print('Using provided parameter values (i.e. not calibrating error model)')
+  }
 
   # calc eta_star
   std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt)
   print("Starting calculation of probabilistic replicates...")
 
   # calc predictive replicates
-  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=reps,Qmin=0.,Qmax=999.,truncType='spike')
+  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike')
 
   # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
@@ -107,7 +123,7 @@ probPred = function(data,opt,param) {
   print("Printing to pdf...")
 
   # opening pdf
-  pdf(paste(title,"_Summary.pdf",sep=""))
+  if(opt$pdfOutput){pdf(paste(title,"_Summary.pdf",sep=""))}
 
 ######################################
 ## Printing plots to pdf
@@ -135,7 +151,6 @@ probPred = function(data,opt,param) {
   # standardised residual plot
   tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
 
-
   # auto & partial correlation plots - temporarily unable to handle missing data
   #if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
     #acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
@@ -146,18 +161,23 @@ probPred = function(data,opt,param) {
   timeseries(data=data,pred.reps=pred.reps,opt=opt)
 
   # terminate PDF
-  dev.off()
+  if(opt$pdfOutput){dev.off())}
 
 ######################################
 ## Printing .csv
 
-  if(opt$repPrint==T) { # Print out a .csv with the replicates in it
+  if(opt$repPrint) { # Print out a .csv with the replicates in it
     write.csv(x=pred.reps,file=paste(title,"_replicates.csv",sep=""))
   }
-  if(opt$plPrint==T) { # Print out a .csv with the probability limits in it
+  if(opt$plPrint) { # Print out a .csv with the probability limits in it
     write.csv(x=pred.pl,file=paste(title,"_probLimits.csv",sep=""))
   }
   print("Run complete!  Please check directory for output files.")
+
+  if(opt$return.output){
+    return(list(param=param,pred.reps=pred.reps,std.resids=std.resids,metrics=metrics))
+  }
+
 }
 
 
