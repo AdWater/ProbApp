@@ -372,3 +372,23 @@ sd.res=sd(residuals,na.rm=T) ## sd of residuals, used with resid.outlier.thres t
 ###  \item{\code{resid.remove.text}}{character string which explains how many outliers removed}}
 }
 
+
+#----------------------------------
+
+skewness = function(x,na.rm=F){
+  if(na.rm){x=x[!is.na(x)]}
+  r = x-mean(x)
+  k3 = mean(r^3)
+  k2 = mean(r^2)
+  return(k3/k2^(3/2))
+}
+
+kurtosis = function(x,na.rm=F){
+  if(na.rm){x=x[!is.na(x)]}
+  r = x-mean(x)
+  k4 = mean(r^4)
+  k2 = mean(r^2)
+  return(k4/k2^2)
+}
+
+#----------------------------------
