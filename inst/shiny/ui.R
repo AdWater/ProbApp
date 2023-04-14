@@ -1,7 +1,7 @@
 ##########################
 ## Javascript Code object
 JScode <-
-  
+
   "$(function() {
 
 setTimeout(function(){
@@ -26,34 +26,20 @@ $('#offset').data('ionRangeSlider').update({'values':vals})
 
 }, 5)})"
 
-##########################
-## Installing packages
-x="moments" %in% rownames(installed.packages())
-if(!x) {install.packages("moments")}
-library("moments")
-
-x="shiny" %in% rownames(installed.packages())
-if(!x) {install.packages("shiny")}
-library("shiny")
-
-x="shinythemes" %in% rownames(installed.packages())
-if(!x) {install.packages("shinythemes")}
-library("shinythemes")
-
 ####NOTE #####
 #ON THIS SIDE OF THE APP (UI) WITHIN THE SHINYUI FUCTION LINES INSIDE FUNCTIONS (AND FUNCTIONS THEMSELVES) ARE SEPARATED USING COMMAS
 
 ##########################
 ## Defining the UI
 shinyUI(
-  
-  
+
+
   ##########################
   ## Front 'About' page
   navbarPage("Interactive Probabilistic Predictions",theme = shinytheme("united"),
              ##########################
              #FIRST TAB PANEL: Home
-             
+
              tabPanel("Home",
                       helpText(h3("Features")),
                       helpText(HTML("<ul><li> Simple and easy to use interactive webapp for single site analysis </li></ul>")),
@@ -79,7 +65,7 @@ shinyUI(
                       helpText(HTML("<a href = 'https://researchers.adelaide.edu.au/profile/dmitri.kavetski'> Prof. Dmitri Kavetski </a>, Professor in Environmental Modelling, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='dmitri.kavetski@adelaide.edu.au'>Email</a>)")),
                       helpText(HTML("<a href = 'https://researchers.adelaide.edu.au/profile/bree.bennett'> Dr Bree Bennett </a>, Senior Lecturer, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='bree.bennett@adelaide.edu.au'>Email</a>)"))
              ),
-             
+
              ##########################
              #SECOND TAB PANEL: Getting started
              tabPanel("Getting Started",
@@ -102,16 +88,16 @@ shinyUI(
                       helpText(HTML("<ul><li> Probability Limits: CSV data file of the probability limits (5%, 95%) of the probabilistic predictions - useful for plotting purposes </li></ul>")),
                       helpText(HTML("<ul><li> Summary: PDF file that summarises the analysis, includes input data details, summary metrics and diagnostics, and probabilistic time series </li></ul>"))
              ),
-             
-             
+
+
              ##########################
              ## THIRD TAB PANEL: Simulation
              tabPanel("Simulation", icon=icon("area-chart","fa-1.9x"),  #adding an icon to the tab
-                      
+
                       verticalLayout(
-                        
+
                         wellPanel(
-                          
+
                           # HEADINGS
                           fluidRow(
                             column(4,helpText(h3("Input Data"))),
@@ -122,14 +108,14 @@ shinyUI(
                                                                   selected="Yackandandah Creek (NSE)")))
                           ),
                           br(),
-                          
+
                           # INPUT DATA
                           fluidRow(
                             column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE),
                                    downloadLink('file2',label="data file example - use 'Open in Browser' at top of interface for easy viewing")) # downloads demo data from package
                           ),
                           fluidRow(
-                            
+
                             conditionalPanel(condition = "input.dataSel == 'Load my own data'",
                                              column(3,
                                                     fileInput('file1',label="",accept=c('text/csv','text/comma-separated-values/plain','.csv')),
@@ -140,14 +126,14 @@ shinyUI(
                             )
                           )
                         ), # end of well panel
-                        
-                        
+
+
                         # MODEL PARAMETERS
                         wellPanel(
                           fluidRow(
                             column(7,helpText(h3("Residual Model Parameters")))
                           ),
-                          
+
                           fluidRow(
                             column(3,sliderInput("lambda","Transformation power parameter (Lambda)",min=0, max=1,value=0.2,step=0.1),
                                    tags$head(tags$script(HTML(JScode))),
@@ -155,11 +141,11 @@ shinyUI(
                             column(2,selectInput(inputId="mean",label="mean structure",choices=c("linear","constant","zero"),selected="zero")),
                             column(5,div(tableOutput("report"),style="font-size:120%"))
                           )
-                          
+
                         ),
-                        
+
                         # WARNING MESSAGES
-                        
+
                         wellPanel(
                           fluidRow(
                             column(7,helpText(h3("Data integrity checks")))
@@ -172,10 +158,10 @@ shinyUI(
                             #column(7,textOutput(outputId="error6"))
                           )
                         ),
-                        
+
                         # TIME SERIES PLOT
                         wellPanel(
-                          
+
                           fluidRow(
                             column(4,checkboxInput(inputId="plotTS",label="Plot timeseries",value=TRUE)) #tick box to hide plot & plotting options
                           ),
@@ -187,51 +173,51 @@ shinyUI(
                             )
                           )
                         ),
-                        
+
                         # PREDICTIVE PERFORMANCE EVALUATION PLOTS
                         wellPanel(
                           fluidRow(
                             column(4,checkboxInput(inputId="plotEval",label="Plot predictive performance evaluation",value=TRUE)) #tick box to hide plot & plotting options
                           ),
-                          
+
                           conditionalPanel(condition = "input.plotEval==true",
-                                           
+
                                            fluidRow(
                                              column(6,helpText("Performance metric plot type")),
                                              column(6,helpText("Performance benchmarking"))
                                            ),
-                                           
+
                                            fluidRow(
                                              column(6,selectInput("perfPlot",NULL,choices =c("Predictive QQ plot"),selected="Predictive QQ plot")),
                                              column(6,selectInput("boxPlot",NULL,choices = c("Reliability","Sharpness","Bias"),selected="Reliability"))
-                                             
+
                                            ),
-                                           
+
                                            fluidRow(
                                              column(6,plotOutput("perf")),  #far-left
                                              column(6,plotOutput("box"))   #centre-right
                                            ),
-                                           
-                                           
+
+
                                            fluidRow(
                                              column(5,helpText("")),
                                              column(2,helpText(h4(HTML("</P> <P ALIGN=CENTER>Metric Summary</P> "))))
                                            ),
-                                           
+
                                            fluidRow(
                                              column(5,helpText("")),
                                              column(2,div(tableOutput("metrics"),style="font-size:120%")) #right
                                            )
                           ) # end tick-box condition
                         ), #end well panel
-                        
+
                         # RESIDUAL DIAGNOSTICS PLOTS
                         wellPanel(
                           fluidRow(
                             column(4,checkboxInput(inputId="plotResid",label="Plot residual diagnostics",value=TRUE)) #tick box to hide plot & plotting options
                           ),
                           conditionalPanel(condition = "input.plotResid==true",
-                                           
+
                                            fluidRow(
                                              column(3,helpText("Residual plot type"))
                                            ),
@@ -249,7 +235,7 @@ shinyUI(
                                              plotOutput("resid")) #centre-left
                           )
                         ), #end well panel
-                        
+
                         # OUTPUT DATA
                         wellPanel(
                           fluidRow(
@@ -264,11 +250,11 @@ shinyUI(
                           ),
                           br()
                         ) # end of wellPanel
-                        
+
                       ) #end of vertical layout
-                      
+
              ),  #end of simulation tab panel
-             
+
              ##########################
              #FOURTH TAB PANEL: Help / About
              tabPanel("Help / About",
@@ -288,10 +274,10 @@ shinyUI(
                       helpText(HTML("McInerney, D., Thyer, M., Kavetski, D., Laugesen, R., Tuteja, N. & Kuczera, G. 2020. Multi-temporal hydrological residual error modeling for seamless subseasonal streamflow forecasting. <i> Water Resources Research </i>, vol. 56, no. 11, pp. 2019WR026979, DOI: <a href = 'https://doi.org/10.1029/2019WR026979'> 10.1029/2019WR026979 </a>")),
                       helpText(HTML("Woldemeskel, F., McInerney D., Lerat J., Thyer M., Kavetski D., Shin D., Tuteja N. & Kuczera G. 2018. Evaluating post-processing approaches for monthly and seasonal streamflow forecasts. <i> Hydrology and Earth System Sciences </i>, vol. 22, no. 12, pp. 6257-6278, DOI: <a href = 'https://doi.org/10.5194/hess-22-6257-2018'> 10.5194/hess-22-6257-2018 </a>"))
              )
-             
-             
-             
-             
+
+
+
+
   ) #end of navbar layout
-  
+
 ) #end of shinyui

@@ -39,21 +39,6 @@
 probPred = function(data,opt,param) {
 
 #######################################
-## Loading dependent packages
-
-  x="moments" %in% rownames(installed.packages())
-  if(!x) {install.packages("moments",lib=.libPaths())}
-  library("moments")
-
-  x="shiny" %in% rownames(installed.packages())
-  if(!x) {install.packages("shiny",lib=.libPaths())}
-  library("shiny")
-
-  x="shinythemes" %in% rownames(installed.packages())
-  if(!x) {install.packages("shinythemes",lib=.libPaths())}
-  library("shinythemes")
-
-#######################################
 ## Inputs & parameters
 
   reps = opt$reps
