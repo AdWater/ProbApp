@@ -1,4 +1,4 @@
-# calibrateFunctions.R 
+# calibrateFunctions.R
 # Calibrates the model
 
 #######################################
@@ -19,13 +19,11 @@ calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meant
     param$mean_eta_1 = p$mu1
     param$rho = p$rho
     param$sigma_y = p$sigma
-    param$mean_eta = p$mu
-
   } else {
     print("Invalid method selected - use MoM only")
     browser()
   }
-  
+
   return(param)
 }
 
@@ -71,6 +69,6 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
     rho = 0.
   }
   sigma = sqrt((s^2)*(1-(rho^2))) # sigmaY
-  
+
   return(list(mu0=mu0,mu1=mu1,rho=rho,sigma=sigma,mu=mu))
 }

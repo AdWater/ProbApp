@@ -1,4 +1,4 @@
-# predictFunctions.R 
+# predictFunctions.R
 # Predictive and back-transformation functions
 
 #######################################
@@ -142,9 +142,11 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
 
   rho_eta = param$rho
   sigma_eta = param$sigma_y
-  mean_eta = param$mean_eta
-  predReps = matrix(nrow=nT,ncol=nReps)
 
+  Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
+  mean_eta = mean_eta_0+mean_eta_1*Qh_T
+
+  predReps = matrix(nrow=nT,ncol=nReps)
 
     for (r in 1:nReps){
       eta = sim_AR1(nT,mu=mean_eta,sigma=sigma_eta,rho=rho_eta)
@@ -155,6 +157,6 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
 
     if (nReps==1){predReps=predReps[,1]}
   colnames(predReps)=paste("rep",seq(1:nReps),sep="")
-  
+
     return(predReps)
 }
