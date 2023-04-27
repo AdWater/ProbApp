@@ -4,58 +4,102 @@
 \alias{probPred}
 \title{probPred function}
 \usage{
-probPred(data, opt, param)
+probPred(data, opt = NULL, param = NULL)
 }
 \arguments{
-\item{data}{Input data, given as a matrix.  Must contain unbroken, aligned columns of a) dates, b) observed streamflow, and c) simulated streamflow from a deterministic model.}
+\item{data}{Input data, given as a dataframe. Must contain unbroken, aligned columns of a) dates, b) observed streamflow, and c) simulated streamflow from a deterministic model. Missing values for observed data can be represent by \code{NA} or negative numbers.)}
 
-\item{opt}{List of options.}
+\item{opt}{List of options - see details.}
 
-\item{param}{List of parameters.}
-
-\item{opt$reps}{Number of probabilistic replicates to be generated. Recommended (and default) number is 100. Higher numbers of replicates require more computing time and lower numbers risk innacurate predictions.}
-
-\item{opt$dirname}{Directory into which the output files are to be saved.}
-
-\item{opt$title}{Default 'replicate'. The title (minus the extension) of the printed .pdf that is output from this function.}
-
-\item{opt$obs}{Column name of the observed streamflow in the input data. Default is 'obs'. This input must match the column header of the observed streamflow.}
-
-\item{opt$pred}{Column name of the simulated, deterministic streamflow in the input data. Default is 'pred'. This input must match the column header of the simulated streamflow.}
-
-\item{opt$date}{Column name of the dates in the input data. Default is 'date'. This input must match the column header of the dates.}
-
-\item{opt$meantype}{Options are "zero" or "linear", with "linear" being default. Defines the structure of the mean parameter in the probabilistic model. "zero" uses traditional modelling assumptions, and "linear" represents an innovative new approach that is more generally-applicable to a wider range of objective functions. Please refer to Hunter et al. 2021 for a comprehensive demonstration of the difference in predictive quality between the two.}
-
-\item{opt$unit}{Units of the input streamflow. Default is 'mmd'. Alternatives are 'mm/d', 'm3s', 'm3/s','ML/d', 'MLd'.}
-
-\item{opt$repPrint}{T / F to print a .csv containing the probabilistic replicates. Default is 'T'.}
-
-\item{opt$plPrint}{T / F to print a .csv containing the probability limits. Default is 'T'.}
-
-\item{param$A}{Box-Cox shift parameter.}
-
-\item{param$lambda}{Box-Cox power parameter.}
+\item{param}{List of error model parameters - see details.}
+}
+\value{
+Output includes (depending on options specified in \code{opt})
+\itemize{
+\item{list containing calibrated error model parameters (\code{param}),
+      predictive replicates (\code{pred.reps}), standardized residuals (\code{std.resids})
+      and metrics (\code{metrics}) (when \code{opt$returnOutput=T})}
+\item{.pdf summary file containing plots and metrics (when \code{opt$pdfOutput=T})}
+\item{.csv file containing the probabilistic predictions (when \code{opt$repPrint=T})}
+\item{.csv file containing probability limits of predictions (when \code{opt$plPrint=T})}
+}
 }
 \description{
-Generates error predictions from a given observed and simulated series. Outputs a .pdf summary file containing plots and metrics, and (optionally) two .csv files containing the probabilistic predictions themselves and the probability limits. By J Hunter & Team.
+Calibrates error model and generates probabilistic predictions from a given observed and simulated series.
+}
+\details{
+The \code{opt} argument is a list with the following options
+\itemize{
+ \item{\code{reps}}{: number of probabilistic replicates to be generated. Recommended (and default) number is 100. Higher numbers of replicates require more computing time and lower numbers risk innacurate predictions.}
+ \item{\code{title}}{: Default 'replicate'. The title (minus the extension) of the printed .pdf that is output from this function..}
+ \item{\code{dirName}}{: directory into which the output files are to be saved.}
+ \item{\code{obsName}}{: Column name of the observed streamflow in the input data. Default is 'obs'. This input must match the column header of the observed streamflow.}
+ \item{\code{predName}}{: Column name of the simulated, deterministic streamflow in the input data. Default is 'pred'. This input must match the column header of the simulated streamflow.}
+ \item{\code{dateName}}{: Column name of the dates in the input data. Default is 'date'. This input must match the column header of the dates.}
+ \item{\code{meanType}}{: Options are "zero" or "linear", with "linear" being default. Defines the structure of the mean parameter in the probabilistic model. "zero" uses traditional modelling assumptions, and "linear" represents an innovative new approach that is more generally-applicable to a wider range of objective functions. Please refer to Hunter et al. 2021 for a comprehensive demonstration of the difference in predictive quality between the two.}
+ \item{\code{unit}}{: Units of the input streamflow (used in plot labels). Default is 'mmd'. Alternatives are 'mm/d', 'm3s', 'm3/s','ML/d', 'MLd'.}
+ \item{\code{repPrint}}{: TRUE / FALSE to print a .csv containing the probabilistic replicates. Default is FALSE.}
+ \item{\code{plPrint}}{: TRUE / FALSE to print a .csv containing the probability limits. Default is FALSE.}
+ \item{\code{plot}}{: TRUE / FALSE to produce figures. Default is FALSE.}
+ \item{\code{pdfOutput}}{: TRUE / FALSE to print figures to pdf. Default is FALSE.}
+ \item{\code{returnOutput}}{: TRUE / FALSE to return parameters, predictive replicates, standardized residuals and metric values. Default is F.}
+}
+
+The \code{param} argument is a list of transformation parameters used in the error model, including
+\itemize{
+ \item{\code{A}}{: Box-Cox shift parameter. Default is 0.}
+ \item{\code{lambda}}{: Box-Cox power parameter. Default is 0.2.}
+}
+Note \code{param} can also include other calibrated error model parameters obtained from another call to probPed() - see example 2 below.
 }
 \examples{
-probPred(data,opt,param)             ## An example of how to launch the function.
+# Read example data file
+fname = system.file("extdata", "402204_SLS.csv", package = "ProbPred")
+data = read.csv(fname) # Example of setting up the data file.
 
-data = read.csv('inputDataFile.csv',as.is=T) ## Example of setting up the data file.
+# -------------------------------------------------------------------------
+# Example 1 - calibration and prediction using all data
+# Setup options list. (All other options use default values)
+opt = list(title='myProbPredictions.all',   # title of output
+           dirName='./',                    # output in cwd
+           pdfOutput=TRUE,                     # generate PDF output
+           returnOutput=FALSE)                    # don't output data list
 
-opt = list(reps=100,
-           title='myProbPredictions',
-           obs='observedData',
-           pred='predictedData',
-           date='dates',
-           meantype='linear',
-           unit='ML/d',
-           repPrint=T,
-           plPrint=T)                        ## Example of setting up the user options.
+# Setup (transformation) parameter values
+param = list(A=0,lambda=0.2)
 
-param = list(A=0.,
-             lambda=0.2)                     ## Example of setting up the input parameters.
+# Run probPred
+# This produces PDF output file in current working directory
+probPred(data=data,opt=opt,param=param)
+
+# -------------------------------------------------------------------------
+# Example 2 - separate calibration and validation (prediction) periods
+
+# Use 1st half of data for calibration, and 2nd half for validation
+nT = nrow(data)
+data.cal = data[1:(nT/2),]               # calibration data
+data.val = data[(nT/2+1):nT,]            # validation data
+
+# ---- Calibration ----
+# Setup calibration run options. Return output data from probPred
+# including parameters (but don't produce PDF or save replicates to file)
+opt.cal = list(returnOutput = TRUE)
+
+# Setup (transformation) parameter values
+param.cal = list(A=0,lambda=0.2)
+# Run probPred for calibration period (producing parameter values)
+out.cal=probPred(data=data.cal,opt=opt.cal,param=param.cal)
+
+# ---- Validation ----
+# Setup validation run options.
+opt.val = list(title = 'myProbPredictions.val', # output name for val period
+               dirName='./',                    # output in cwd
+               pdfOutput=TRUE,                      # create PDF output this time
+               returnOutput = FALSE)               # don't return data for val
+
+# Use calibrated parameter values from calibration period
+param.val = out.cal$param
+
+# Run probPred for validation period (producing PDF output)
+out.val=probPred(data=data.val,opt=opt.val,param=param.val)
 }
-\keyword{none}

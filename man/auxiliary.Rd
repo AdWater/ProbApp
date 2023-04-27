@@ -45,6 +45,8 @@ auxiliary(
 
 \item{type.label}{# labelling}
 
+\item{box.colour}{# colour of box in boxplot}
+
 \item{std.resids}{# standardised residuals}
 
 \item{pred.pl}{# probability limits}
@@ -54,7 +56,3 @@ auxiliary(
 \description{
 For internal use with the shiny app only. By J Hunter & Team.
 }
-\examples{
-none          ## no example - this script is not for the user; it is for the webapp
-}
-\keyword{none}
