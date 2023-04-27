@@ -4,7 +4,12 @@
 #' @keywords none
 #' @export
 #' @examples
-#' probPredInteractive()          ## An example of how to use the function. All user inputs are accessed from within the Shiny interface.
+#'
+#'\dontrun{
+#' # An example of how to use the function. All user inputs are accessed from
+#' # within the Shiny interface.#'
+#' probPredInteractive()
+#'}
 
 probPredInteractive=function() {
 
