@@ -1,12 +1,3 @@
-#' Error message repository
-#'
-#' For internal use with the shiny app only. By J Hunter & Team.
-#' @param flag  # indicates which error is being called
-#' @keywords none
-#' @export
-#' @examples
-#' none          ## no example - this script is not for the user; it is for the webapp - and webapps need no examples
-
 #######################################
 ## Data check error messages
 
