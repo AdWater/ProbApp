@@ -57,8 +57,9 @@ plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NU
 boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
 
   ## Opening Robject with HRS metrics
-  RData_fname = paste(data_dirname,"/",metric,'.RData',sep='')
-  load(RData_fname)
+  #RData_fname = paste(data_dirname,"/",metric,'.RData',sep='')
+  #load(RData_fname)
+  data(metric)
   HRSlab = paste("HRS",metric,sep="")
 
   # setting boxplot specifications
