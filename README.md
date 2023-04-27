@@ -27,12 +27,11 @@ probPred(data,opt,param)
 
 For more information regarding the inputs and outputs of the model, please refer to the help files of the individual functions.
 
-Please log any bugs or issues at https://github.com/Jasenter/Probabilistic_App/ and direct any comments or feedback to  jason.hunter@adelaide.edu.au.
+Please log any bugs or issues at https://github.com/AdWater/ProbApp/issues and direct any comments or feedback to david.mcinerney@adelaide.edu.au.
 
 #### Versions
 ProbPred release version 1.0.0 is optimised for:
 
 + R version 4.0.2
-+ moments version 0.14
 + shiny version 1.6.0
 + shinythemes version 1.2.0
