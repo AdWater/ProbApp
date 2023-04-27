@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^ToDo\.txt$
+^examples$
+^LICENSE\.md$
