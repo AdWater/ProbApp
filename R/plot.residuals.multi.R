@@ -275,7 +275,6 @@ plot.residuals.density=function(
 
   stats.txt=""
   if (show.stats){
-   require(moments)
    xlab=paste(xlab,": N=",length(residuals),
                    ", Mean:",format(mean(residuals.masked$residuals,na.rm=T),digits=2),
                    ", SD:",format(sd(residuals.masked$residuals,na.rm=T),digits=2),
