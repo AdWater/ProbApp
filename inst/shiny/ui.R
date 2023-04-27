@@ -36,7 +36,7 @@ shinyUI(
 
   ##########################
   ## Front 'About' page
-  navbarPage("Interactive Probabilistic Predictions",theme = shinytheme("united"),
+  navbarPage("Interactive Probabilistic Predictions",theme = shinythemes::shinytheme("united"),
              ##########################
              #FIRST TAB PANEL: Home
 
