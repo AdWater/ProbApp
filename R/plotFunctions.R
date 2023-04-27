@@ -59,7 +59,13 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   ## Opening Robject with HRS metrics
   #RData_fname = paste(data_dirname,"/",metric,'.RData',sep='')
   #load(RData_fname)
-  data(metric)
+  if (metric == 'reliability'){
+    data(reliability)
+  } else if (metric == 'sharpness'){
+    data(sharpness)
+  } else if (metric == 'bias'){
+    data(bias)
+  }
   HRSlab = paste("HRS",metric,sep="")
 
   # setting boxplot specifications
