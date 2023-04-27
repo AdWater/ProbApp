@@ -15,13 +15,8 @@
 #' @param std.resids # standardised residuals
 #' @param pred.pl # probability limits
 #' @param input # axis ranges
-#' @keywords none
+#' @param box.colour # colour of box in boxplot
 #' @export
-#' @examples
-#' none          ## no example - this script is not for the user; it is for the Shiny interface
-
-
-
 
 #######################################
 ## Interfacing for the shiny app
