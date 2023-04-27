@@ -37,7 +37,7 @@ plot.problim<-function(
   add=FALSE,        ##<< Add data to existing plot, default =\code{FALSE}
   add.indices=T,    ##<< add numerical indices for assessing the precision of the probability plot, default=\code{TRUE}, see note for details
   switch.xy=F,      ##<< Flag to switch x and y axis, default=\code{FALSE} - if switched the ylim becomes the xlim and vice versa
-  pl.bar=F,         ##<< Flag if \code{true}, it will plot barplots for probability limits, instead of lines and fill
+#  pl.bar=F,         ##<< Flag if \code{true}, it will plot barplots for probability limits, instead of lines and fill
   mask=NULL,        ##<< logical vector used to mask values of \code{obs and pred} from plot. Only values where \code{mask=FALSE} are plotted. Also see note below.
   mask.apply="obs",  ##<< character vector specifying what variables mask should apply to. Options include "obs" (default) and "pred" and in future releases, "pred.pl".
   x.axis.timestep="daily",  ##<< If x is of class \code{\link{POSIXct}}, this provides the time step used for tickmarks on the  x axis, it is passed to the \code{by} arg for \code{\link{seq.Date}}, where axis is produced by the command: \code{axis.POSIXct(1, at=seq(min(x),max(x), by=x.axis.timestep), format=x.axis.format)}, see \code{\link{seq.Date}} and \code{\link{axis.POSIXct}} for options. Default = \code{"month"}
@@ -49,7 +49,7 @@ plot.problim<-function(
   percentiles=calc.percentiles.from.pl(pl)
   n.pl=length(pl)
   if(is.null(pred.pl)) {pred.pl=calc.problim(pred.reps,percentiles=percentiles,pl.type="ts")}
-  if(pl.bar) {median.pl=calc.problim(pred.reps,percentiles=0.5,pl.type="ts")}
+#  if(pl.bar) {median.pl=calc.problim(pred.reps,percentiles=0.5,pl.type="ts")}
   if(is.null(x)) {x<-seq(1,nrow(pred.pl))}
   if(pl.name!="") {plname=paste(pl.name,": ",sep="")}
 
@@ -92,18 +92,18 @@ plot.problim<-function(
       if(!switch.xy) {polygon(x.poly,y.poly,col=pl.col[i],border=pl.border)} else {polygon(y.poly,x.poly,col=pl.col[i],border=pl.border)}
       leg.pch=c(15,leg.pch);leg.col=c(pl.col[i],leg.col);leg.lty=c(NA,leg.lty)
       pt.bg=c(pt.bg,NA)
-    } else if (pl.bar) {       # Draw vertical bars for pl
-      pkg.ext=require(gplots)
-      if (!pkg.ext) {stop("package gplots is required for pl.bar, but is unavailable")}
-      if(!switch.xy) {
-        mask=which(!(pred.pl[,pl.bot.col]==pred.pl[,pl.top.col]))
-        plotCI(x=x[mask],y=median.pl[mask],li=pred.pl[mask,pl.bot.col],ui=pred.pl[mask,pl.top.col],barcol=pl.col[i],col=pl.col[i],add=T)
-      } else {
-        warning("switch.xy argument not implemented for pl.bar=TRUE")
-        ##note<< \code{switch} argument not implemented for \code{pl.bar=TRUE}
-      }
-      leg.pch=c(leg.pch,NA);leg.lty=c(leg.lty,"dotted");leg.col=c(leg.col,pl.col[i])
-      pt.bg=c(pt.bg,NA)
+    # } else if (pl.bar) {       # Draw vertical bars for pl
+    #   pkg.ext=require(gplots)
+    #   if (!pkg.ext) {stop("package gplots is required for pl.bar, but is unavailable")}
+    #   if(!switch.xy) {
+    #     mask=which(!(pred.pl[,pl.bot.col]==pred.pl[,pl.top.col]))
+    #     plotCI(x=x[mask],y=median.pl[mask],li=pred.pl[mask,pl.bot.col],ui=pred.pl[mask,pl.top.col],barcol=pl.col[i],col=pl.col[i],add=T)
+    #   } else {
+    #     warning("switch.xy argument not implemented for pl.bar=TRUE")
+    #     ##note<< \code{switch} argument not implemented for \code{pl.bar=TRUE}
+    #   }
+    #   leg.pch=c(leg.pch,NA);leg.lty=c(leg.lty,"dotted");leg.col=c(leg.col,pl.col[i])
+    #   pt.bg=c(pt.bg,NA)
     } else {       # Draw lines
       if(!switch.xy) {
           lines(x=x,y=pred.pl[,pl.bot.col],type="l",lty="dotted",col=pl.col[i])
