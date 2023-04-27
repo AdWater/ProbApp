@@ -3,4 +3,3 @@
 export(auxiliary)
 export(probPred)
 export(probPredInteractive)
-export(xerr)
