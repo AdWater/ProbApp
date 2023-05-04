@@ -37,7 +37,7 @@ rankHRS = function(metrics,dir.loc) {
     met[i] = round(metrics[[i]],digits=3) # round now that the calculations with it are done
   }
   met.table = data.frame(met,rankVector.text,rank)
-  
+
   return(met.table)
 }
 
@@ -55,7 +55,7 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
   plot(NA,xlim=c(1,10),ylim=c(1,4),bty="n",xaxt="n",yaxt="n",xlab="",ylab="")
   text(x=5,y=3,label=c("Probabilistic Predictions"),cex=1.5,font=2)
   text(x=5,y=2,label=c(paste("Designed by the UofA Water Group 2020",
-                            "Please direct all comments and bug reports to jason.hunter@adelaide.edu.au",sep="\n")))
+                            "Please direct all comments and bug reports to david.mcinerney@adelaide.edu.au",sep="\n")))
 # Metrics
   met.table = rankHRS(metrics=metrics,dir.loc=dir.loc)
   plot(NA,xlim=c(0.5,3.5),ylim=c(0.5,3.5),xaxt="n",yaxt="n",xlab="",ylab="",main="Metrics")
