@@ -1,5 +1,5 @@
 # following code used for algorithmik server
-#dirname = 'ProbPred/R/'
+#dirname = 'ProbApp/R/'
 #files.sources = paste0(dirname,list.files(dirname))
 #sapply(files.sources, source)
 
