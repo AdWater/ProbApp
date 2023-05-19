@@ -2,6 +2,9 @@
 #dirname = 'ProbApp/R/'
 #files.sources = paste0(dirname,list.files(dirname))
 #sapply(files.sources, source)
+#dir.loc = './'
+
+dir.loc = system.file("shiny",package="ProbPred")
 
 shinyServer(function(input, output, session) {
 #
@@ -29,7 +32,6 @@ shinyServer(function(input, output, session) {
     ## UPDATE INFO FROM FORM
 
     if(input$offset>0){Astar=10^-(8-input$offset)}else{Astar=0}
-    dir.loc = system.file("shiny",package="ProbPred")
 
     # PREPARING EXAMPLE DATA FOR PRINTING
     demoData = read.csv(paste(dir.loc,"/","402204_SLS.csv",sep=""))
@@ -163,7 +165,7 @@ shinyServer(function(input, output, session) {
   output$dlSummary <- downloadHandler(filename=function(){paste(input$model,"Summary",".pdf",sep="")},content=function(file){
      pdf(file=file)
 
-     dir.loc = system.file("shiny",package="ProbPred")
+ #    dir.loc = system.file("shiny",package="ProbPred")
      withProgress(message="preparing pdf summary...",value=0,{
        auxiliary(callfunction="output.main",data=vals$out$data,opt=vals$out$data.lab,param=vals$out$param,metrics=vals$out$metrics,dir.loc=dir.loc)
        auxiliary(callfunction="boxplotter",metrics=vals$out$metrics[[1]],dir.loc=dir.loc,type.label="reliability",box.colour="pink")
@@ -258,7 +260,7 @@ shinyServer(function(input, output, session) {
     incProgress(amount=0.6)
 
     output$box <- renderPlot({
-      dir.loc = system.file("shiny",package="ProbPred")
+#      dir.loc = system.file("shiny",package="ProbPred")
       if(input$boxPlot == "Reliability"){metric="reliability";boxColour="pink";met=1}
       if(input$boxPlot == "Sharpness"){metric="sharpness";boxColour="white";met=2}
       if(input$boxPlot == "Bias"){metric="bias"; boxColour="lightblue";met=3}
