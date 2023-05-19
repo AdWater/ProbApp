@@ -1,0 +1,17 @@
+Instructions for setting up shiny app on algorithmik (or any other server).
+Note we download code, but don't install package (installing package would overwrite previous version of package).
+
+1. download code from github
+
+git clone https://github.com/AdWater/ProbApp.git
+
+2. copy shiny files to cwd
+
+cp -R ProbApp/inst/shiny/* ./
+
+3. edit server.R to ensure following lines are not commented out:
+
+dirname = 'ProbApp/R/'
+files.sources = paste0(dirname,list.files(dirname))
+sapply(files.sources, source)
+
