@@ -1,9 +1,10 @@
-# following code used for algorithmik server
+# following code used for algorithmik server (no installation of package)
 #dirname = 'ProbApp/R/'
 #files.sources = paste0(dirname,list.files(dirname))
 #sapply(files.sources, source)
 #dir.loc = './'
 
+# following code used in package
 dir.loc = system.file("shiny",package="ProbPred")
 
 shinyServer(function(input, output, session) {
