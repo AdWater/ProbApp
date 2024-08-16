@@ -161,20 +161,56 @@ probPred = function(data,opt=NULL,param=NULL) {
 ######################################
 ## Calculations
 
+  date = as.Date(data$date,format='%d/%m/%Y')
+  N = length(date)
+
+  strat = list()
+  strat$type = list()
+  strat$index = list()
+  ######
+  strat$index$all = list()
+  strat$index$all[[1]] = 1:N
+  ######
+  strat$index$month = list()
+  for (m in 1:12){
+    strat$index$month[[m]] = which(as.integer(format(date,'%m'))==m)
+  }
+  ######
+
+  if (is.null(opt$strat_mean)){
+    strat$type$mean='all'
+  } else if (opt$strat_mean=='month'){
+    strat$type$mean='month'
+  }
+
+  if (is.null(opt$strat_sigma)){
+    strat$type$sigma='all'
+  } else if (opt$strat_sigma=='month'){
+    strat$type$sigma='month'
+  }
+
+  if (is.null(opt$strat_rho)){
+    strat$type$rho='all'
+  } else if (opt$strat_rho=='month'){
+    strat$type$rho='month'
+  }
+
+
   if (calc.params){
     # calc parameters
     print('Calibrating parameters')
-    param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=opt$meanType,opt=opt)
+    param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=opt$meanType,opt=opt,strat=strat)
   } else {
     print('Using provided parameter values (i.e. not calibrating error model)')
   }
 
   # calc eta_star
-  std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt)
+  std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt,strat=strat)
 
   print("Starting calculation of probabilistic replicates...")
   # calc predictive replicates
-  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike')
+  #pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike')
+  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike',strat=strat)
 
   # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
@@ -182,6 +218,7 @@ probPred = function(data,opt=NULL,param=NULL) {
   print("Starting calculation of metrics...")
   # generating metrics (reliability, precision, bias)
   metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
+#metrics = NULL
 
   # opening pdf
   if(opt$pdfOutput){
@@ -216,7 +253,7 @@ probPred = function(data,opt=NULL,param=NULL) {
     plot.residuals(data=data,std.resids=std.resids,type='density',opt=opt)
 
     # standardised residual plot
-    tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
+    tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt,strat=strat)
 
     # auto & partial correlation plots - temporarily unable to handle missing data
     #if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {

@@ -103,20 +103,36 @@ calc_pred_from_eta = function(Qh,heteroModel,param,eta,Qmin=0.,Qmax=999.,truncTy
 ## calculate innovations
 
 sim_AR1 = function(nT,mu,sigma,rho){
+  if (is.vector(mu)){
+    mu_vec = mu
+  } else {
+    mu_vec = rep(mu,nT)
+  }
+  if (is.vector(sigma)){
+    sigma_vec = sigma
+  } else {
+    sigma_vec = rep(sigma,nT)
+  }
+  if (is.vector(rho)){
+    rho_vec = rho
+  } else {
+    rho_vec = rep(rho,nT)
+  }
+
   eta = vector(length = nT)
-  eta[1] = mu[1] + rnorm(n=1,mean=0.,sd=sigma/sqrt(1-rho^2))
+  eta[1] = mu_vec[1] + rnorm(n=1,mean=0.,sd=sigma_vec[1]/sqrt(1-rho_vec[1]^2))
   flag = 0
   for (t in 2:nT){
-    if (is.na(mu[t-1]) || is.na(mu[t])) {
+    if (is.na(mu_vec[t-1]) || is.na(mu_vec[t])) {
       eta[t] = NA
       flag = 1
     } else {
       if (flag == 1) {
-        eta[t] = mu[t] + rnorm(n=1,mean=0.,sd=sigma/sqrt(1-rho^2))
+        eta[t] = mu_vec[t] + rnorm(n=1,mean=0.,sd=sigma_vec[t]/sqrt(1-rho_vec[t]^2))
         flag = 0
         next
       }
-      eta[t] = rho*(eta[t-1]-mu[t-1]) + mu[t] + rnorm(n=1,mean=0.,sd=sigma)
+      eta[t] = rho_vec[t]*(eta[t-1]-mu_vec[t-1]) + mu_vec[t] + rnorm(n=1,mean=0.,sd=sigma_vec[t])
     }
 
   }
@@ -127,7 +143,7 @@ sim_AR1 = function(nT,mu,sigma,rho){
 #######################################
 ## generate replicates
 
-calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike',validate=F){
+calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike',validate=F,strat=strat){
   nT = length(Qh)
   if (is.null(param$mean_eta_0)){
     mean_eta_0 = 0.
@@ -144,13 +160,31 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
   sigma_eta = param$sigma_y
 
   Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
-  mean_eta = mean_eta_0+mean_eta_1*Qh_T
+
+  mean_eta_0_vec = mean_eta_1_vec = vector(length = nT)
+  for (k in 1:length(strat$index[[strat$type$mean]])){
+    keep = strat$index[[strat$type$mean]][[k]]
+    mean_eta_0_vec[keep] = mean_eta_0[k]; mean_eta_1_vec[keep] = mean_eta_1[k]
+  }
+
+  sigma_eta_vec = vector(length = nT)
+  for (k in 1:length(strat$index[[strat$type$sigma]])){
+    keep = strat$index[[strat$type$sigma]][[k]]
+    sigma_eta_vec[keep] = sigma_eta[k]
+  }
+
+  rho_eta_vec = vector(length = nT)
+  for (k in 1:length(strat$index[[strat$type$rho]])){
+    keep = strat$index[[strat$type$rho]][[k]]
+    rho_eta_vec[keep] = rho_eta[k]
+  }
+
+  mean_eta = mean_eta_0_vec+mean_eta_1_vec*Qh_T
 
   predReps = matrix(nrow=nT,ncol=nReps)
 
     for (r in 1:nReps){
-      eta = sim_AR1(nT,mu=mean_eta,sigma=sigma_eta,rho=rho_eta)
-
+      eta = sim_AR1(nT,mu=mean_eta,sigma=sigma_eta_vec,rho=rho_eta_vec)
       predReps[,r] = calc_pred_from_eta(Qh=Qh,heteroModel=heteroModel,param=param,
                                         eta=eta,Qmin=Qmin,Qmax=Qmax,truncType=truncType)
     }

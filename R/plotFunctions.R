@@ -121,10 +121,10 @@ timeseries = function(data,pred.reps,opt) {
 #######################################
 ## standardised residual plots
 
-tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F,add.title=F,opt) { # standardised residuals against transformed streamflow
+tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F,add.title=F,opt,strat=strat) { # standardised residuals against transformed streamflow
 
   eta = calc_eta(Qobs=data[[opt$obs]],Qh=data[[opt$pred]],param=param,heteroModel=heteroModel) # transformed residuals
-  eta.std = calc_std_resids(data,param,heteroModel=heteroModel,opt=opt) # standardised, transformed residuals
+  eta.std = calc_std_resids(data,param,heteroModel=heteroModel,opt=opt,strat=strat) # standardised, transformed residuals
   sim = calc_tranz(Q=data[[opt$pred]],Qh=NULL,heteroModel=heteroModel,param=param) # transformed predicted flow
 
   sim = sim[!is.na(eta.std)]

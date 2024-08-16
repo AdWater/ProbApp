@@ -1,0 +1,8 @@
+DONE
+- fix missing data
+- add cal/val
+- fix documentation, especially examples
+- check package - devtools::check()
+
+TODO
+- reduce replicated code in shiny interface and main R script
