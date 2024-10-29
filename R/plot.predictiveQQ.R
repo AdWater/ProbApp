@@ -32,8 +32,10 @@ plot.predictiveQQ=function(
    add.indices=T, ##<< logical, add numerical indices for assessing reliability to plot, default=\code{TRUE}
    xlab="Theoretical Quantile of U[0,1]", ##<< x label, default=\code{"Theoretical Quantile of U[0,1]"}
    ylab="Quantile of observed p-value", ##<< y label, default=\code{"Quantile of observed p-value"}
-   add=F,
-   perturb=F,##<< logical, add to an existing plot
+   add=F,##<< logical, add to an existing plot
+   perturb=F,
+   col='black',
+   
    ...  ##<< additional plot parameters passed to \code{\link{plot.default}}
    ){
    # Check arguments
@@ -105,7 +107,7 @@ plot.predictiveQQ=function(
     } else if (!is.null(square.col)) {
       symbols(x=plotpoints$x,y=plotpoints$y,squares=sym.scale,bg=square.col,inches=inches,add=T,...)
     } else {
-      points(x=plotpoints$x,y=plotpoints$y,...)
+      points(x=plotpoints$x,y=plotpoints$y,col=col,...)
     }
   }
   # Any additions to plot

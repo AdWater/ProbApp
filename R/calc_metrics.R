@@ -66,7 +66,8 @@ abs_bias_prob =  function(obs,pred){
 
 calc_metrics = function(data,pred.reps,opt){
   reliability = PQQ_alpha(obs=data[[opt$obs]],pred.reps=pred.reps,perturb=T)
-  pred.reps.base = calc_ClimDaily_dayOfYearWindow_seamless(QobsCal=data[[opt$obs]],datesCal=data[[opt$date]])
+  pred.reps.base = calc_ClimDaily_dayOfYearWindow_seamless(QobsCal=data[[opt$obs]],
+                                                           datesCal=as.Date(data[[opt$dateName]],format=opt$dateFormat))
   sharpness = sharpness(pred.reps=pred.reps,pred.reps.base=pred.reps.base)
   bias = abs_bias_prob(obs=data[[opt$obs]],pred=pred.reps)
 

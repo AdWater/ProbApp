@@ -1,6 +1,6 @@
 rm(list=ls())
 
-devtools::load_all()
+devtools::load_all('C:/Users/a1065639/Work/ProbApp/')
 
 ################################################
 
@@ -71,6 +71,14 @@ param = list(A=0,lambda=0.2)
 # Run probPred
 # This produces PDF output file in current working directory
 o = probPred(data=data,opt=opt,param=param)
+
+std_resid = o$std.resids
+date = as.Date(data$date,format='%d/%m/%Y')
+std_resid_zoo = zoo(std_resid,order.by=date)
+std_resid_month_zoo= aggregate(std_resid_zoo, format(time(std_resid_zoo), "%m"), mean)
+plot(std_resid_month_zoo,type='o')
+abline(h=0,lty=2)
+
 synth_test(o,opt,param)
 
 # mean_eta_0_mat = matrix(nrow=length(o$param$mean_eta_0),ncol=nReps)
@@ -124,7 +132,17 @@ synth_test(o2,opt2,param)
 
 opt3 = opt2; opt3$strat_rho = 'month'
 o3 = probPred(data=data,opt=opt3,param=param)
+
+std_resid = o3$std.resids
+date = as.Date(data$date,format='%d/%m/%Y')
+std_resid_zoo = zoo(std_resid,order.by=date)
+std_resid_month_zoo= aggregate(std_resid_zoo, format(time(std_resid_zoo), "%m"), mean)
+plot(std_resid_month_zoo,type='o')
+abline(h=0,lty=2)
+
+
 synth_test(o3,opt3,param)
+
 
 # data.synth.o3 = data
 # data.synth.o3$obs = o3$pred.reps[,1]

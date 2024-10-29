@@ -100,6 +100,7 @@ probPred = function(data,opt=NULL,param=NULL) {
   if(is.null(opt$obsName)){opt$obsName='obs'}
   if(is.null(opt$predName)){opt$predName='pred'}
   if(is.null(opt$dateName)){opt$dateName='date'}
+  if(is.null(opt$dateFormat)){opt$dateFormat='%d/%m/%Y'}
   if(is.null(opt$meanType)){opt$meanType='linear'}
   if(is.null(opt$unit)){opt$unit='mmd'}
   if(is.null(opt$repPrint)){opt$repPrint=F}
@@ -161,7 +162,9 @@ probPred = function(data,opt=NULL,param=NULL) {
 ######################################
 ## Calculations
 
-  date = as.Date(data$date,format='%d/%m/%Y')
+#  date = as.Date(data$date,format='%d/%m/%Y')
+  date = as.Date(data$date,format=opt$dateFormat)
+  
   N = length(date)
 
   strat = list()
@@ -195,7 +198,6 @@ probPred = function(data,opt=NULL,param=NULL) {
     strat$type$rho='month'
   }
 
-
   if (calc.params){
     # calc parameters
     print('Calibrating parameters')
@@ -217,8 +219,8 @@ probPred = function(data,opt=NULL,param=NULL) {
 
   print("Starting calculation of metrics...")
   # generating metrics (reliability, precision, bias)
-  metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
-#metrics = NULL
+  #metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
+metrics = NULL
 
   # opening pdf
   if(opt$pdfOutput){
@@ -281,7 +283,7 @@ probPred = function(data,opt=NULL,param=NULL) {
   print("Run complete!")
 
   if(opt$returnOutput){
-    return(list(param=param,pred.reps=pred.reps,std.resids=std.resids,metrics=metrics))
+    return(list(param=param,pred.reps=pred.reps,std.resids=std.resids,metrics=metrics,strat=strat))
   }
 
 }
