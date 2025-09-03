@@ -41,6 +41,7 @@ The \code{opt} argument is a list with the following options
  \item{\code{repPrint}}{: TRUE / FALSE to print a .csv containing the probabilistic replicates. Default is FALSE.}
  \item{\code{plPrint}}{: TRUE / FALSE to print a .csv containing the probability limits. Default is FALSE.}
  \item{\code{plot}}{: TRUE / FALSE to produce figures. Default is FALSE.}
+ \item{\code{calcMetrics}}{: TRUE / FALSE to calculate metrics. Default is TRUE. If FALSE, opt$plot is set to FALSE.}
  \item{\code{pdfOutput}}{: TRUE / FALSE to print figures to pdf. Default is FALSE.}
  \item{\code{returnOutput}}{: TRUE / FALSE to return parameters, predictive replicates, standardized residuals and metric values. Default is F.}
 }
