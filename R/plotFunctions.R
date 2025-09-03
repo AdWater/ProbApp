@@ -111,7 +111,7 @@ timeseries = function(data,pred.reps,opt) {
 
     ylim.max = max(data[[opt$obs]][start:end],sort(pred.reps[start:end,])[0.9*length(sort(pred.reps[start:end,]))],na.rm=T)
     plot.problim(obs=data[[opt$obs]],pred.reps=pred.reps,xlab='Time',ylab=paste('Prediction (',opt$unit,")",sep=""),add.indices=F,
-                 xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data[[opt$date]],
+                 xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data[[opt$dateName]],
                  pred=opt$pred,pred.lty=1,pred.lwd=2,pred.col="black",pred.name="Predicted")
 
     lines(data$pred,col="black",lwd=2)
