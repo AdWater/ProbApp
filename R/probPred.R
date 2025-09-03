@@ -27,6 +27,7 @@
 ##'  \item{\code{repPrint}}{: TRUE / FALSE to print a .csv containing the probabilistic replicates. Default is FALSE.}
 ##'  \item{\code{plPrint}}{: TRUE / FALSE to print a .csv containing the probability limits. Default is FALSE.}
 ##'  \item{\code{plot}}{: TRUE / FALSE to produce figures. Default is FALSE.}
+##'  \item{\code{calcMetrics}}{: TRUE / FALSE to calculate metrics. Default is TRUE. If FALSE, opt$plot is set to FALSE.}
 ##'  \item{\code{pdfOutput}}{: TRUE / FALSE to print figures to pdf. Default is FALSE.}
 ##'  \item{\code{returnOutput}}{: TRUE / FALSE to return parameters, predictive replicates, standardized residuals and metric values. Default is F.}
 ##' }
@@ -106,6 +107,7 @@ probPred = function(data,opt=NULL,param=NULL) {
   if(is.null(opt$repPrint)){opt$repPrint=F}
   if(is.null(opt$plPrint)){opt$plPrint=F}
   if(is.null(opt$plot)){opt$plot=F}
+  if(is.null(opt$calcMetrics)){opt$calcMetrics=T}
   if(is.null(opt$pdfOutput)){opt$pdfOutput=F}
   if(opt$pdfOutput){opt$plot=T}
   if(is.null(opt$returnOutput)){opt$returnOutput=T}
@@ -113,6 +115,8 @@ probPred = function(data,opt=NULL,param=NULL) {
   if(is.null(param$A)){param$A=0}
   if(is.null(param$lambda)){param$lambda=0.2}
 
+  if(!opt$calcMetrics){opt$plot=F}
+  
   setwd(opt$dirName)
   data_dirname = system.file("shiny",package="ProbPred")
 
@@ -217,19 +221,22 @@ probPred = function(data,opt=NULL,param=NULL) {
   # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
 
-  print("Starting calculation of metrics...")
-  # generating metrics (reliability, precision, bias)
-  #metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
-metrics = NULL
-
-  # opening pdf
-  if(opt$pdfOutput){
-    print("Printing to pdf...")
-    pdf(paste(opt$title,".summary.pdf",sep=""))
+  if (opt$calcMetrics){
+    print("Starting calculation of metrics...")
+    # generating metrics (reliability, precision, bias)
+    metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
+  } else {
+    metrics = NULL
   }
 
   # decide whether to plot
   if(opt$plot){
+    
+    # opening pdf
+    if(opt$pdfOutput){
+      print("Printing to pdf...")
+      pdf(paste(opt$title,".summary.pdf",sep=""))
+    }
 
 ######################################
 ## producing plots
@@ -266,10 +273,10 @@ metrics = NULL
     # Timeseries
     timeseries(data=data,pred.reps=pred.reps,opt=opt)
 
+    # terminate PDF
+    if(opt$pdfOutput){dev.off()}
+    
   }
-
-  # terminate PDF
-  if(opt$pdfOutput){dev.off()}
 
 ######################################
 ## Printing .csv
