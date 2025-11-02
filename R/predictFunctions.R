@@ -143,7 +143,8 @@ sim_AR1 = function(nT,mu,sigma,rho){
 #######################################
 ## generate replicates
 
-calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike',validate=F,strat=strat){
+calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike',validate=F,strat=NULL){
+  
   nT = length(Qh)
   if (is.null(param$mean_eta_0)){
     mean_eta_0 = 0.
@@ -162,21 +163,35 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
   Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
 
   mean_eta_0_vec = mean_eta_1_vec = vector(length = nT)
-  for (k in 1:length(strat$index[[strat$type$mean]])){
-    keep = strat$index[[strat$type$mean]][[k]]
-    mean_eta_0_vec[keep] = mean_eta_0[k]; mean_eta_1_vec[keep] = mean_eta_1[k]
+  if (!is.null(strat$index[[strat$type$mean]])){
+    for (k in 1:length(strat$index[[strat$type$mean]])){
+      keep = strat$index[[strat$type$mean]][[k]]
+      mean_eta_0_vec[keep] = mean_eta_0[k]; mean_eta_1_vec[keep] = mean_eta_1[k]
+    }    
+  } else {
+    mean_eta_0_vec = rep(mean_eta_0,nT)
+    mean_eta_1_vec = rep(mean_eta_1,nT)
   }
 
+
   sigma_eta_vec = vector(length = nT)
-  for (k in 1:length(strat$index[[strat$type$sigma]])){
-    keep = strat$index[[strat$type$sigma]][[k]]
-    sigma_eta_vec[keep] = sigma_eta[k]
+  if (!is.null(strat$index[[strat$type$sigma]])){
+    for (k in 1:length(strat$index[[strat$type$sigma]])){
+      keep = strat$index[[strat$type$sigma]][[k]]
+      sigma_eta_vec[keep] = sigma_eta[k]
+    }
+  } else {
+    sigma_eta_vec = rep(sigma_eta,nT)
   }
 
   rho_eta_vec = vector(length = nT)
-  for (k in 1:length(strat$index[[strat$type$rho]])){
-    keep = strat$index[[strat$type$rho]][[k]]
-    rho_eta_vec[keep] = rho_eta[k]
+  if (!is.null(strat$index[[strat$type$rho]])){
+    for (k in 1:length(strat$index[[strat$type$rho]])){
+      keep = strat$index[[strat$type$rho]][[k]]
+      rho_eta_vec[keep] = rho_eta[k]
+    }
+  } else {
+    rho_eta_vec = rep(rho_eta,nT)
   }
 
   mean_eta = mean_eta_0_vec+mean_eta_1_vec*Qh_T
