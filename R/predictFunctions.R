@@ -162,6 +162,8 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
 
   Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
 
+  if (is.null(strat)){strat=set_strat_all(nT)}
+  
   mean_eta_0_vec = mean_eta_1_vec = vector(length = nT)
   if (!is.null(strat$index[[strat$type$mean]])){
     for (k in 1:length(strat$index[[strat$type$mean]])){

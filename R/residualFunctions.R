@@ -13,7 +13,7 @@ calc_eta = function(Qobs,Qh,param,heteroModel){
 #######################################
 ## Calc standardised residual
 
-calc_std_resids = function(data,param,heteroModel,opt,strat){
+calc_std_resids = function(data,param,heteroModel,opt,strat=NULL){
   Qobs = data[[opt$obs]]
   Qh = data[[opt$pred]]
   Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
@@ -21,6 +21,8 @@ calc_std_resids = function(data,param,heteroModel,opt,strat){
 
   nT = length(eta)
 
+  if (is.null(strat)){strat=set_strat_all(nT)}
+  
   #n = length(eta)-sum(is.na(eta))
 
   mu0 = param$mean_eta_0 # normalising

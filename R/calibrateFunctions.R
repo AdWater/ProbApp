@@ -30,7 +30,7 @@ cal_mean = function(eta,Qh_T,meantype){
 
 calibrate_hetero = function(data,param,heteroModel,calc_rho=F,meantype,opt,strat=NULL){
 
-  # need mean_typ
+  # need mean_type
 
   Qobs=data[[opt$obs]]
   Qh=data[[opt$pred]]
@@ -43,6 +43,8 @@ calibrate_hetero = function(data,param,heteroModel,calc_rho=F,meantype,opt,strat
 
   date = as.Date(data$date,format='%d/%m/%Y')
 
+  if (is.null(strat)){strat=set_strat_all(N)}
+  
   # if (method=='MoM'){
   #   p = AR1_MoM(eta=eta,Qh=Qh_T,calc_rho=calc_rho,meantype)
   #   param$mean_eta_0 = p$mu0
