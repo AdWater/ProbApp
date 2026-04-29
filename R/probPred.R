@@ -30,6 +30,8 @@
 ##'  \item{\code{calcMetrics}}{: TRUE / FALSE to calculate metrics. Default is TRUE. If FALSE, opt$plot is set to FALSE.}
 ##'  \item{\code{pdfOutput}}{: TRUE / FALSE to print figures to pdf. Default is FALSE.}
 ##'  \item{\code{returnOutput}}{: TRUE / FALSE to return parameters, predictive replicates, standardized residuals and metric values. Default is F.}
+##'  \item{\code{Qmin}}{: Minimum flow value for probabilistic predictions. Default is 0.}
+##'  \item{\code{Qmax}}{: Maximum flow value for probabilistic predictions. Default is 999.}
 ##' }
 ##' @details The \code{param} argument is a list of transformation parameters used in the error model, including
 ##' \itemize{
@@ -111,7 +113,9 @@ probPred = function(data,opt=NULL,param=NULL) {
   if(is.null(opt$pdfOutput)){opt$pdfOutput=F}
   if(opt$pdfOutput){opt$plot=T}
   if(is.null(opt$returnOutput)){opt$returnOutput=T}
-
+  if(is.null(opt$Qmin)){param$Qmin=0.}
+  if(is.null(opt$Qmax)){param$Qmax=999.}
+  
   if(is.null(param$A)){param$A=0}
   if(is.null(param$lambda)){param$lambda=0.2}
 
@@ -216,7 +220,7 @@ probPred = function(data,opt=NULL,param=NULL) {
   print("Starting calculation of probabilistic replicates...")
   # calc predictive replicates
   #pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike')
-  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=0.,Qmax=999.,truncType='spike',strat=strat)
+  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=opt$reps,Qmin=opt$Qmin,Qmax=opt$Qmax,truncType='spike',strat=strat)
 
   # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
